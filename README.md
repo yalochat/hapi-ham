@@ -28,9 +28,17 @@ server.register({
     throw err
   }
 
+  server.route({
+    method: 'GET',
+    path: '/',
+    handler: function (request, reply) {
+      return reply.validateWebhook()
+    }
+  })
+
   // Add the route
   server.route({
-    method: ['POST', 'GET'],
+    method: 'POST',
     path: '/',
     handler: function (request, reply) {
       const template = {
