@@ -4,7 +4,7 @@
   "description": "hapi answering machine",
   "main": "lib/index.js",
   "scripts": {
-    "test": "lab -c -v -S -m 20000"
+    "test": "jest --coverage"
   },
   "author": {
     "name": "José De Paz",
@@ -20,6 +20,7 @@
     "boom": "^4.2.0",
     "bucker": "^1.1.1",
     "hoek": "^4.1.0",
+    "kaiwa": "^0.1.1",
     "wreck": "^10.0.0"
   },
   "devDependencies": {
@@ -29,7 +30,8 @@
     "gulp-jshint": "^2.0.0",
     "gulp-nodemon": "^2.0.3",
     "gulp-watch": "^4.3.5",
-    "kaiwa": "^0.1.0",
+    "jest": "^20.0.4",
+    "kaiwa": "~0.1.0",
     "lab": "^11.2.2",
     "nodemon": "^1.x.x",
     "require-dir": "^0.3.1"
