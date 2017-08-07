@@ -92,7 +92,7 @@ test('send request and validate one response', (done) => {
 
       expect(result[0]).toEqual(expectedMessage)
       server.stop((err) => {
-        tester.stop((err) => {
+        tester.stopListening((err) => {
           done()
         })
       })
@@ -174,7 +174,7 @@ test('send request and validate two responses', (done) => {
       expect(result[0]).toEqual(firstExpectedMessage)
       expect(result[1]).toEqual(secondExpectedMessage)
       server.stop((err) => {
-        tester.stop((err) => {
+        tester.stopListening((err) => {
           done()
         })
       })
