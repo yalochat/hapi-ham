@@ -4,6 +4,7 @@ const Hapi = require('hapi')
 const Kaiwa = require('kaiwa')
 
 let server
+let tester
 beforeEach(() => {
   return new Promise((resolve, reject) => {
     server = new Hapi.Server()
@@ -12,7 +13,7 @@ beforeEach(() => {
     server.register({
       register: require('../'),
       options: {
-        provider: 'facebook-messenger',
+        provider: 'whatsapp',
         access_token: '123',
         proxy: 'http://localhost:3001/bots',
         logger: {
@@ -50,7 +51,7 @@ test('send request and validate one response', (done) => {
     handler: (request, reply) => {
       reply({ message: 'Good test!' })
       const template = {
-        text: `Hola ${request.event.message.text}`
+        body: `Hola ${request.event.message.text}`
       }
       const options = {
         botSlug: 'test'
@@ -64,38 +65,31 @@ test('send request and validate one response', (done) => {
     testingPort: 3001
   }
 
-  const tester = new Kaiwa.Tester(kaiwaOptions)
+  tester = new Kaiwa.Tester(kaiwaOptions)
 
   tester.startListening((error) => {
     if (error) {
       throw error
     }
     const messageToSend = {
-      object: 'page',
-      entry: [
-        {
-          messaging: [
-            {
-              sender: { id: 1 },
-              message: { text: 'ping' }
-            }
-          ]
+      payload: {
+        from: 1,
+        message: {
+          text: 'ping',
+          type: 'text'
         }
-      ]
+      }
     }
     const expectedMessage = {
-      recipient: { id: 1 },
-      message: { text: 'Hola ping' }
+      payload: {
+        to: 1,
+        body: 'Hola ping'
+      }
     }
 
     tester.runScript(messageToSend).then((result) => {
 
       expect(result[0]).toEqual(expectedMessage)
-      server.stop((err) => {
-        tester.stopListening((err) => {
-          done()
-        })
-      })
       done()
 
     }).catch((error) => {
@@ -115,11 +109,11 @@ test('send request and validate two responses', (done) => {
       reply({ message: 'Good test!' })
       const templates = [
         {
-          message: { text: `Hello ${request.event.message.text}` },
+          message: { body: `Hello ${request.event.message.text}` },
           delay: 0
         },
         {
-          message: { text: `Hola ${request.event.message.text}` },
+          message: { body: `Hola ${request.event.message.text}` },
           delay: 0
         }
       ]
@@ -136,33 +130,33 @@ test('send request and validate two responses', (done) => {
     testingPort: 3001
   }
 
-  const tester = new Kaiwa.Tester(kaiwaOptions)
+  tester = new Kaiwa.Tester(kaiwaOptions)
 
   tester.startListening((error) => {
     if (error) {
       throw error
     }
     const messageToSend = {
-      object: 'page',
-      entry: [
-        {
-          messaging: [
-            {
-              sender: { id: 1 },
-              message: { text: 'ping' }
-            }
-          ]
+      payload: {
+        from: 1,
+        message: {
+          text: 'ping',
+          type: 'text'
         }
-      ]
+      }
     }
     const firstExpectedMessage = {
-      recipient: { id: 1 },
-      message: { text: 'Hello ping' }
+      payload: {
+        to: 1,
+        body: 'Hello ping'
+      }
     }
 
     const secondExpectedMessage = {
-      recipient: { id: 1 },
-      message: { text: 'Hola ping' }
+      payload: {
+        to: 1,
+        body: 'Hola ping'
+      }
     }
 
     const options = {
@@ -173,11 +167,6 @@ test('send request and validate two responses', (done) => {
 
       expect(result[0]).toEqual(firstExpectedMessage)
       expect(result[1]).toEqual(secondExpectedMessage)
-      server.stop((err) => {
-        tester.stopListening((err) => {
-          done()
-        })
-      })
       done()
 
     }).catch((error) => {
@@ -186,4 +175,20 @@ test('send request and validate two responses', (done) => {
     })
   })
 
+})
+
+afterEach(() => {
+  return new Promise((resolve, reject) => {
+    server.stop((err) => {
+      if (err) {
+        return reject(err)
+      }
+      tester.stopListening((err) => {
+        if (err) {
+          return reject(err)
+        }
+        resolve()
+      })
+    })
+  })
 })

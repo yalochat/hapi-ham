@@ -30,7 +30,7 @@
     "gulp-nodemon": "^2.0.3",
     "gulp-watch": "^4.3.5",
     "jest": "^20.0.4",
-    "kaiwa": "^0.3.3",
+    "kaiwa": "^0.3.7",
     "lab": "^11.2.2",
     "nodemon": "^1.x.x",
     "require-dir": "^0.3.1"
