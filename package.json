@@ -4,7 +4,15 @@
   "description": "hapi answering machine",
   "main": "lib/index.js",
   "scripts": {
-    "test": "jest --coverage"
+    "test": "jest",
+    "precommit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.js": [
+      "prettier --write",
+      "eslint --fix",
+      "git add"
+    ]
   },
   "author": {
     "name": "José De Paz",
@@ -17,22 +25,33 @@
   },
   "license": "ISC",
   "dependencies": {
+    "bluebird": "^3.5.1",
     "boom": "^4.2.0",
     "bucker": "^1.1.1",
+    "hapi": "^16.6.2",
     "hoek": "^4.1.0",
-    "wreck": "^10.0.0"
+    "lodash": "^4.17.4",
+    "request": "^2.83.0",
+    "request-promise": "^4.2.2",
+    "wreck": "^10.0.0",
+    "require-dir": "^0.3.2"
   },
   "devDependencies": {
     "code": "^4.0.0",
     "dotenv": "^4.0.0",
+    "eslint": "^4.11.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.8.0",
     "gulp": "^3.9.1",
     "gulp-jshint": "^2.0.0",
     "gulp-nodemon": "^2.0.3",
     "gulp-watch": "^4.3.5",
+    "husky": "^0.14.3",
     "jest": "^20.0.4",
     "kaiwa": "^0.3.7",
     "lab": "^11.2.2",
+    "lint-staged": "^5.0.0",
     "nodemon": "^1.x.x",
-    "require-dir": "^0.3.1"
+    "prettier": "1.8.2"
   }
 }
