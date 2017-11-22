@@ -1,68 +1,71 @@
-'use strict'
-
+const Bucker = require('bucker')
 const Hapi = require('hapi')
 const Kaiwa = require('kaiwa')
+const HapiHam = require('../lib')
+
+const logger = Bucker.createLogger({ name: 'test/whatsapp' })
 
 let server
 let tester
-beforeEach(() => {
-  return new Promise((resolve, reject) => {
+
+beforeEach(() =>
+  new Promise((resolve, reject) => {
     server = new Hapi.Server()
     server.connection({ host: 'localhost', port: 3000 })
 
-    server.register({
-      register: require('../'),
-      options: {
-        provider: 'whatsapp',
-        access_token: '123',
-        proxy: 'http://localhost:3001/bots',
-        logger: {
-          console: true,
-          level: 'debug'
+    server.register(
+      {
+        register: HapiHam,
+        options: {
+          provider: 'whatsapp',
+          access_token: '123',
+          proxy: 'http://localhost:3001/bots',
+          logger: {
+            console: true,
+            level: 'debug',
+          },
+          silent: true,
         },
-        silent: true
-      }
-    }, (err) => {
-
-      if (err) {
-        throw err
-      }
-
-      // Start the server
-      server.start((err) => {
+      },
+      (err) => {
         if (err) {
-          throw err;
-          reject()
+          throw err
         }
-        console.log('Server with hapi-ham running at:', server.info.uri)
-        resolve()
-      })
-    })
-  })
 
-})
-
+        // Start the server
+        server.start((error) => {
+          if (error) {
+            reject(error)
+          }
+          logger.info('Server with hapi-ham running at:', server.info.uri)
+          resolve()
+        })
+      },
+    )
+  }))
 
 test('send request and validate one response', (done) => {
-
   server.route({
     method: ['POST', 'GET'],
     path: '/',
     handler: (request, reply) => {
       reply({ message: 'Good test!' })
       const template = {
-        body: `Hola ${request.event.message.text}`
+        body: `Hola ${request.event.message.text}`,
       }
       const options = {
-        botSlug: 'test'
+        botSlug: 'test',
       }
-      request.app.send(template, options).then(result => console.log).catch(error => console.error)
-    }
+      request.app
+        .send(template, options)
+        .then(logger.info.bind(logger))
+        .catch(logger.error.bind(logger))
+    },
   })
 
   const kaiwaOptions = {
     webHookURL: 'http://localhost:3000',
-    testingPort: 3001
+    testingPort: 3001,
   }
 
   tester = new Kaiwa.Tester(kaiwaOptions)
@@ -76,32 +79,28 @@ test('send request and validate one response', (done) => {
         from: 1,
         message: {
           text: 'ping',
-          type: 'text'
-        }
-      }
+          type: 'text',
+        },
+      },
     }
     const expectedMessage = {
       payload: {
         to: 1,
-        body: 'Hola ping'
-      }
+        body: 'Hola ping',
+      },
     }
 
-    tester.runScript(messageToSend).then((result) => {
-
-      expect(result[0]).toEqual(expectedMessage)
-      done()
-
-    }).catch((error) => {
-      throw error
-      done()
-    })
+    tester
+      .runScript(messageToSend)
+      .then((result) => {
+        expect(result[0]).toEqual(expectedMessage)
+        done()
+      })
+      .catch(done)
   })
-
 })
 
 test('send request and validate two responses', (done) => {
-
   server.route({
     method: ['POST', 'GET'],
     path: '/',
@@ -110,24 +109,27 @@ test('send request and validate two responses', (done) => {
       const templates = [
         {
           message: { body: `Hello ${request.event.message.text}` },
-          delay: 0
+          delay: 0,
         },
         {
           message: { body: `Hola ${request.event.message.text}` },
-          delay: 0
-        }
+          delay: 0,
+        },
       ]
 
       const options = {
-        botSlug: 'test'
+        botSlug: 'test',
       }
-      request.app.send(templates, options).then(result => console.log).catch(error => console.error)
-    }
+      request.app
+        .send(templates, options)
+        .then(logger.info.bind(logger))
+        .catch(logger.error.bind(logger))
+    },
   })
 
   const kaiwaOptions = {
     webHookURL: 'http://localhost:3000',
-    testingPort: 3001
+    testingPort: 3001,
   }
 
   tester = new Kaiwa.Tester(kaiwaOptions)
@@ -141,54 +143,51 @@ test('send request and validate two responses', (done) => {
         from: 1,
         message: {
           text: 'ping',
-          type: 'text'
-        }
-      }
+          type: 'text',
+        },
+      },
     }
     const firstExpectedMessage = {
       payload: {
         to: 1,
-        body: 'Hello ping'
-      }
+        body: 'Hello ping',
+      },
     }
 
     const secondExpectedMessage = {
       payload: {
         to: 1,
-        body: 'Hola ping'
-      }
+        body: 'Hola ping',
+      },
     }
 
     const options = {
-      responses: 2
+      responses: 2,
     }
 
-    tester.runScript(messageToSend, options).then((result) => {
-
-      expect(result[0]).toEqual(firstExpectedMessage)
-      expect(result[1]).toEqual(secondExpectedMessage)
-      done()
-
-    }).catch((error) => {
-      throw error
-      done()
-    })
+    tester
+      .runScript(messageToSend, options)
+      .then((result) => {
+        expect(result[0]).toEqual(firstExpectedMessage)
+        expect(result[1]).toEqual(secondExpectedMessage)
+        done()
+      })
+      .catch(done)
   })
-
 })
 
-afterEach(() => {
-  return new Promise((resolve, reject) => {
+afterEach(() =>
+  new Promise((resolve, reject) => {
+    /* eslint-disable consistent-return */
     server.stop((err) => {
       if (err) {
         return reject(err)
       }
-      tester.stopListening((err) => {
-        if (err) {
-          return reject(err)
+      tester.stopListening((testerError) => {
+        if (testerError) {
+          return reject(testerError)
         }
-        resolve()
+        return resolve()
       })
     })
-  })
-})
+  }))
