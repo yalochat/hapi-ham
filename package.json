@@ -1,6 +1,6 @@
 {
   "name": "hapi-ham",
-  "version": "5.0.19",
+  "version": "5.0.20",
   "description": "hapi answering machine",
   "main": "lib/index.js",
   "scripts": {
