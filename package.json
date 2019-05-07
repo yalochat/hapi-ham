@@ -32,7 +32,6 @@
     "hoek": "^4.1.0",
     "joi": "^13.4.0",
     "lodash": "^4.17.4",
-    "node-rdkafka": "^2.3.3",
     "request": "^2.83.0",
     "request-promise": "^4.2.2",
     "require-dir": "^0.3.2",
