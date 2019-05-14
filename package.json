@@ -31,10 +31,11 @@
     "hapi": "^16.6.2",
     "hoek": "^4.1.0",
     "joi": "^13.4.0",
-    "lodash": "^4.17.4",
-    "request": "^2.83.0",
+    "lodash": "^4.17.11",
+    "request": "^2.88.0",
     "request-promise": "^4.2.2",
     "require-dir": "^0.3.2",
+    "superagent": "^5.0.5",
     "wreck": "^10.0.0"
   },
   "devDependencies": {
@@ -45,14 +46,14 @@
     "eslint-plugin-import": "^2.8.0",
     "gulp": "^3.9.1",
     "gulp-jshint": "^2.0.0",
-    "gulp-nodemon": "^2.0.3",
+    "gulp-nodemon": "^2.4.2",
     "gulp-watch": "^4.3.5",
     "husky": "^0.14.3",
     "jest": "^20.0.4",
     "kaiwa": "^0.3.7",
     "lab": "^11.2.2",
     "lint-staged": "^5.0.0",
-    "nodemon": "^1.x.x",
+    "nodemon": "^1.19.0",
     "prettier": "1.8.2"
   }
 }
